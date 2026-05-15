@@ -4,3 +4,4 @@ Database: PostgreSQL
 Docker: docker-compose
 ORM: SQLAlchemy
 Auth: JWT
+========================
