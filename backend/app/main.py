@@ -3,19 +3,24 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import Base, engine
 
+# Import models để SQLAlchemy biết những bảng cần tạo
 from app.models.user import User
 from app.models.feature import Feature
 from app.models.package import Package, PackageFeature
+from app.models.user_credit import UserCredit, UserFeature
+from app.models.transaction import Transaction
 
+# Import routers
 from app.routers.auth import router as auth_router
 from app.routers.seed import router as seed_router
 from app.routers.admin_test import router as admin_test_router
 from app.routers.features import router as features_router
 from app.routers.packages import router as packages_router
+from app.routers.purchases import router as purchases_router
+from app.routers.users import router as users_router
 
-# Tạo bảng trong database nếu bảng chưa tồn tại
-# Lưu ý: create_all không tự cập nhật cột nếu bảng đã tồn tại.
-# Nếu đổi model mà database lỗi, cần docker-compose down -v
+
+# Tạo bảng nếu chưa tồn tại
 Base.metadata.create_all(bind=engine)
 
 
@@ -26,30 +31,28 @@ app = FastAPI(
 )
 
 
-# CORS cho phép frontend React gọi API backend
+# Cho phép frontend React gọi API
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Demo test nên để *, production thì nên giới hạn domain
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 
-# Gắn các router vào FastAPI app
+# Gắn router vào app
 app.include_router(auth_router)
 app.include_router(seed_router)
 app.include_router(admin_test_router)
 app.include_router(features_router)
 app.include_router(packages_router)
+app.include_router(purchases_router)
+app.include_router(users_router)
 
 
 @app.get("/")
 def root():
-    """
-    API kiểm tra backend có chạy không.
-    """
-
     return {
         "message": "Credit SaaS API is running"
     }
@@ -57,11 +60,6 @@ def root():
 
 @app.get("/health")
 def health_check():
-    """
-    API health check.
-    Dùng để kiểm tra trạng thái backend.
-    """
-
     return {
         "status": "ok"
     }
