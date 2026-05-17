@@ -19,6 +19,7 @@ from app.routers.packages import router as packages_router
 from app.routers.purchases import router as purchases_router
 from app.routers.users import router as users_router
 
+from app.routers.feature_usage import router as feature_usage_router
 
 # Tạo bảng nếu chưa tồn tại
 Base.metadata.create_all(bind=engine)
@@ -49,7 +50,7 @@ app.include_router(features_router)
 app.include_router(packages_router)
 app.include_router(purchases_router)
 app.include_router(users_router)
-
+app.include_router(feature_usage_router)
 
 @app.get("/")
 def root():
